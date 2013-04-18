@@ -48,7 +48,8 @@ from twisted.internet import reactor
 DEFAULT_PREFS = {
     'max_seeds' : -1,
     'filter' : 'func_ratio',
-    'count_exempt' : False
+    'count_exempt' : False,
+    'remove_data' : False
 }
 
 def _get_ratio((i, t)): 
@@ -73,7 +74,7 @@ class Core(CorePluginBase):
         
         # Safe after loading to have a default configuration if no gtkui is available
         self.config.save()
-        self.torrent_states()
+        self.torrent_states.save()
         
 
         eventmanager = component.get("EventManager")
@@ -139,6 +140,7 @@ class Core(CorePluginBase):
 
         max_seeds = self.config['max_seeds'] 
         count_exempt = self.config['count_exempt']
+        remove_data = self.config['remove_data']
 
         # Negative max means unlimited seeds are allowed, so don't do anything
         if max_seeds < 0: 
@@ -147,6 +149,8 @@ class Core(CorePluginBase):
         torrentmanager = component.get("TorrentManager")
         torrent_ids = torrentmanager.get_torrent_list()
 
+        log.debug("Number of torrents: {0}".format(len(torrent_ids)))
+                  
         # If there are less torrents present than we allow then there can be nothing to do 
         if len(torrent_ids) <= max_seeds: 
             return 
@@ -173,6 +177,10 @@ class Core(CorePluginBase):
 
             (ignored_torrents if ignored else torrents).append((i, t))
 
+        log.debug("Number of finished torrents: {0}".format(len(torrents)))
+        log.debug("Number of ignored torrents: {0}".format(len(ignored_torrents)))
+        
+
         # now that we have trimmed active torrents check again to make sure we still need to proceed
         if len(torrents) + (len(ignored_torrents) if count_exempt else 0) <= max_seeds: 
             return 
@@ -191,7 +199,7 @@ class Core(CorePluginBase):
             log.debug("AutoRemove: Remove torrent %s, %s" % (i, t.get_status(['name'])['name']))
             if live: 
                 try:
-                    torrentmanager.remove(i, remove_data = False)
+                    torrentmanager.remove(i, remove_data = remove_data)
                 except Exception, e: 
                     log.warn("AutoRemove: Problems removing torrent: %s", e)
 

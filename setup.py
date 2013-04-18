@@ -1,6 +1,7 @@
 #
 # setup.py
 #
+# Copyright (C) 2013 Sven Klomp <mail@klomp.eu>
 # Copyright (C) 2011 Jamie Lennox <jamielennox@gmail.com>
 #
 # Basic plugin template created by:
@@ -40,9 +41,9 @@
 from setuptools import setup
 
 __plugin_name__ = "AutoRemove"
-__author__ = "Jamie Lennox"
-__author_email__ = "jamielennox@gmail.com"
-__version__ = "0.1"
+__author__ = "Sven Klomp"
+__author_email__ = "mail@klomp.eu"
+__version__ = "0.2"
 __url__ = ""
 __license__ = "GPLv3"
 __description__ = ""
