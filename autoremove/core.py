@@ -70,6 +70,11 @@ class Core(CorePluginBase):
         log.debug ("AutoRemove: Enabled")
         self.config = deluge.configmanager.ConfigManager("autoremove.conf", DEFAULT_PREFS)
         self.torrent_states = deluge.configmanager.ConfigManager("autoremovestates.conf", {})
+        
+        # Safe after loading to have a default configuration if no gtkui is available
+        self.config.save()
+        self.torrent_states()
+        
 
         eventmanager = component.get("EventManager")
         eventmanager.register_event_handler("TorrentFinishedEvent", self.do_remove)
